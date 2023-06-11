@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using Quaternion = UnityEngine.Quaternion;
 using Vector3 = UnityEngine.Vector3;
@@ -16,6 +17,7 @@ public class Chessboard : MonoBehaviour
     
     // LOGIC
     private ChessPiece[,] _chessPieces;
+    private ChessPiece currentlyDragging;
     private const int TILE_COUNT_CHESS = 8;
     private GameObject[,] tiles;
     private Camera currentCamera;
@@ -42,18 +44,41 @@ public class Chessboard : MonoBehaviour
         {
             // Obtenemos los indicies de las casillas sobre las que pasa el mouse
             Vector2Int hitPosition = getTileIndex(info.transform.gameObject);
-
+            
+            // Nada a seleccion
             if (actualTile == -Vector2Int.one)
             {
                 // Targeted
                 actualTile = hitPosition;
                 tiles[hitPosition.x, hitPosition.y].layer = LayerMask.NameToLayer("Hover");
             } 
+            // Seleccion a seleccion
             if (actualTile != hitPosition)
             {
                 tiles[actualTile.x, actualTile.y].layer = LayerMask.NameToLayer("Tile");
                 actualTile = hitPosition;
                 tiles[hitPosition.x, hitPosition.y].layer = LayerMask.NameToLayer("Hover");
+            }
+
+            // Presionamos mouse para mover
+            if (Input.GetMouseButtonDown(0))
+            {
+                if (_chessPieces[hitPosition.x, hitPosition.y] != null)
+                {
+                    // Comprobar nuestro turno
+                    if (true)
+                    {
+                        currentlyDragging = _chessPieces[hitPosition.x, hitPosition.y];
+                        
+                    }
+                }
+            }
+            // Soltamos el mouse para colocar
+            if (currentlyDragging != null && Input.GetMouseButtonUp(0))
+            {
+                Vector2Int previousPosition = new Vector2Int(currentlyDragging.currentX, currentlyDragging.currentY);
+
+                bool validMove = MoveTo();
             }
         }
         else
