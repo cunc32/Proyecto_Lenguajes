@@ -384,19 +384,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tileMaterial: {fileID: 2100000, guid: f2bf428ce7ff3034fa36f0501202717e, type: 2}
   tileSize: 1
-  yOffset: 0.5
+  yOffset: 0.3
   boardCenter: {x: 0, y: 0, z: 0}
   deathSize: 0.3
   deathSpacing: 0.3
   dragOffset: 1.5
   victoryScreen: {fileID: 59200258}
   prefabs:
-  - {fileID: 1576211527598678087, guid: 83b2027a4193ab3419640a48d16af74e, type: 3}
-  - {fileID: 6293792381742357257, guid: d161e8af0928cbb449605a2a9463a203, type: 3}
-  - {fileID: 3635675981270223569, guid: e476f16b76af3f049ba39f4ab545212c, type: 3}
-  - {fileID: 5495285648092839539, guid: 2bc3d75a8799e664c822eb4b7425400c, type: 3}
-  - {fileID: 481946532233013687, guid: f48437cd9a09b4c4cbe817af5c90dda6, type: 3}
-  - {fileID: 4242653026251168475, guid: 6b25ac3528d8e5446a72cb9fb9ceae97, type: 3}
+  - {fileID: 3747210557031049769, guid: 32fab8a7ab2ba7b469807084924b050e, type: 3}
+  - {fileID: 2054570749736676135, guid: b0996f2513c49f74680c064b4f4c66ea, type: 3}
+  - {fileID: 2145017164060124611, guid: b19b0ced141da21498c3de116beea266, type: 3}
+  - {fileID: 1152328980130375112, guid: a54806d91fc8d5443a96a6d6096b68d9, type: 3}
+  - {fileID: 3548359912913266616, guid: 9341cecf1edd7c748a9b3b2c98006250, type: 3}
+  - {fileID: 2164881857427081916, guid: 68d0183dac7cc114b9646b31fd2babbf, type: 3}
   teamMaterials:
   - {fileID: 2100000, guid: ddbb7a2e4b229bf40a0ff970c5e0db0b, type: 2}
   - {fileID: 2100000, guid: afe560a545ddb5c449231306b64c4bd6, type: 2}
@@ -944,7 +944,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -0.06, y: 11.84, z: 0.3}
+  m_LocalPosition: {x: 0, y: 11.84, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1521,7 +1521,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7858620365698072869, guid: b9ab8713c17260b46bd98202db1d3aba, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.29927
+      value: -0.26
       objectReference: {fileID: 0}
     - target: {fileID: 7858620365698072869, guid: b9ab8713c17260b46bd98202db1d3aba, type: 3}
       propertyPath: m_LocalPosition.z

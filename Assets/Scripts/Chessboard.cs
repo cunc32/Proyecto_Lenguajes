@@ -23,6 +23,7 @@ public class Chessboard : MonoBehaviour
     // LOGIC
     private ChessPiece[,] _chessPieces;
     private ChessPiece currentlyDragging;
+    private bool dragging = false;
     private List<ChessPiece> deadWhites = new List<ChessPiece>();
     private List<ChessPiece> deadBlacks = new List<ChessPiece>();
     private List<Vector2Int> availableMoves = new List<Vector2Int>();
@@ -32,6 +33,7 @@ public class Chessboard : MonoBehaviour
     private Vector2Int actualTile;
     private Vector3 bounds;
     private bool isWhiteTurn;
+    private bool isSelected;
     private void Awake()
     {
         isWhiteTurn = true;
@@ -70,8 +72,8 @@ public class Chessboard : MonoBehaviour
                 tiles[hitPosition.x, hitPosition.y].layer = LayerMask.NameToLayer("Hover");
             }
 
-            // Presionamos mouse para mover
-            if (Input.GetMouseButtonDown(0))
+            // Presionamos mouse para seleccionar
+            if (!dragging && Input.GetMouseButtonDown(0))
             {
                 if (_chessPieces[hitPosition.x, hitPosition.y] != null)
                 {
@@ -81,12 +83,13 @@ public class Chessboard : MonoBehaviour
                         currentlyDragging = _chessPieces[hitPosition.x, hitPosition.y];
                         // Obtén una lista de los lugares a los que puede ir el número 1 y resalta las casillas como soldadura.
                         availableMoves = currentlyDragging.GetAvailableMoves(ref _chessPieces, TILE_COUNT_CHESS, TILE_COUNT_CHESS);
+                        dragging = true;
                         HighlightTiles();
                     }
                 }
             }
             // Soltamos el mouse para colocar
-            if (currentlyDragging != null && Input.GetMouseButtonUp(0))
+            else if (dragging && Input.GetMouseButtonDown(0))
             {
                 Vector2Int previousPosition = new Vector2Int(currentlyDragging.currentX, currentlyDragging.currentY);
 
@@ -95,8 +98,13 @@ public class Chessboard : MonoBehaviour
                     currentlyDragging.SetPosition(GetTileCenter(previousPosition.x, previousPosition.y));
 
                 currentlyDragging = null;
+                dragging = false;
                 RemoveHighlightTiles();
 
+            }
+            else if (currentlyDragging == null && Input.GetMouseButtonUp(0))
+            {
+                RemoveHighlightTiles();
             }
         }
         else
@@ -114,7 +122,7 @@ public class Chessboard : MonoBehaviour
             }
         }
         //Si estamos arrastrando una pieza.
-        if (currentlyDragging)
+        if (dragging)
         {
             Plane horizontalPlane = new Plane(Vector3.up, Vector3.up * yOffset);
             float distance = 0.0f;
@@ -199,7 +207,9 @@ public class Chessboard : MonoBehaviour
 
         cp.type = type;
         cp.team = team;
-        cp.GetComponentInChildren<MeshRenderer>().material = teamMaterials[team];
+        cp.GetComponent<MeshRenderer>().material = teamMaterials[team];
+        cp.gameObject.layer = LayerMask.NameToLayer("Pieces");
+        cp.SetScale(Vector3.one * 32.3f);
 
         return cp;
     }
@@ -212,9 +222,11 @@ public class Chessboard : MonoBehaviour
                 if (_chessPieces[x, y] != null)
                     PositionSinglePiece(x, y, true);
                 if ((x == 2 || x == 5) && y == 0)
-                    _chessPieces[x, y].transform.rotation = Quaternion.Euler(0, 90, 0);
+                    _chessPieces[x, y].transform.Rotate(Vector3.back, -90);
+                if ((x == 1 || x == 6) && y == 0)
+                    _chessPieces[x, y].transform.Rotate(Vector3.back, 180);
                 if ((x == 2 || x == 5) && y == 7)
-                    _chessPieces[x, y].transform.rotation = Quaternion.Euler(0, -90, 0);
+                    _chessPieces[x, y].transform.Rotate(Vector3.back, 90);
             }
     }
     private void PositionSinglePiece(int x, int y, bool force = false)
@@ -236,8 +248,9 @@ public class Chessboard : MonoBehaviour
     }
     private void RemoveHighlightTiles()
     {
-        for (int i = 0; i < availableMoves.Count; i++)
-            tiles[availableMoves[i].x, availableMoves[i].y].layer = (ContainsValidMove(ref availableMoves, actualTile)) ? LayerMask.NameToLayer("Highlight") : LayerMask.NameToLayer("Tile");
+        for (int i = 0; i < 8; i++)
+            for (int j = 0; j < 8; j++)
+                tiles[i, j].layer = LayerMask.NameToLayer("Tile");
 
         availableMoves.Clear();
     }
