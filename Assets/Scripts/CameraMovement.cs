@@ -6,7 +6,7 @@ public class CameraMovement : MonoBehaviour
 
     private Camera currentCamera;
     private Vector3 previousPosition;
-    private float distanceToTarget = 11.5f;
+    public float distanceToTarget = 11.5f;
     // Update is called once per frame
     void Update()
     {

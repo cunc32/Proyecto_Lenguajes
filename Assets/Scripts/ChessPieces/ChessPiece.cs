@@ -15,6 +15,9 @@ public enum ChessPieceType
 }
 public class ChessPiece : MonoBehaviour
 {
+    [Header("Padre")]
+    [SerializeField] private GameObject chessBoard;
+    
     public int team;
     public int currentX;
     public int currentY;
@@ -28,6 +31,7 @@ public class ChessPiece : MonoBehaviour
 		//transform.rotation = Quaternion.Euler((team==0) ? Vector3.zero : new Vector3(0,180,0));
 	}
 
+    private bool shoot = false;
     private bool isSelected = false;
     
     public void Update()
@@ -50,7 +54,13 @@ public class ChessPiece : MonoBehaviour
         VScreen.z = 11.84f;
         RaycastHit hit;
         Ray ray = currentCamera.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out hit, 200, LayerMask.GetMask("Pieces")))
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            shoot = false;
+        }
+        
+        if (Physics.Raycast(ray, out hit, 200, LayerMask.GetMask("Pieces")) && shoot)
         {
             if (Input.GetMouseButtonDown(0)) // Verificar clic izquierdo
             {
@@ -65,7 +75,7 @@ public class ChessPiece : MonoBehaviour
             }
         }
 
-        if (isSelected)
+        if (shoot)
         {
             // Calcular la dirección del mouse en el mundo
             Vector3 VWold = new Vector3();
@@ -89,8 +99,14 @@ public class ChessPiece : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             isSelected = false;
+            shoot = false;
         }
         
+    }
+
+    public void Shoot(bool shooting)
+    {
+        shoot = true;
     }
 
     public virtual List<Vector2Int> GetAvailableMoves(ref ChessPiece[,] board, int tileCountX, int tileCountY)

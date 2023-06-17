@@ -1,8 +1,11 @@
+using System;
 using Unity.VisualScripting;
 using UnityEngine;
 using Quaternion = UnityEngine.Quaternion;
 using Vector3 = UnityEngine.Vector3;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
+using UnityEngine.UIElements;
 
 public class Chessboard : MonoBehaviour
 {
@@ -15,6 +18,7 @@ public class Chessboard : MonoBehaviour
     [SerializeField] private float deathSpacing = 0.3f;
     [SerializeField] private float dragOffset = 1.5f;
     [SerializeField] private GameObject victoryScreen;
+    [SerializeField] private GameObject popMenu;
     
     [Header("Prefabs & Materials")]
     [SerializeField] private GameObject[] prefabs;
@@ -23,6 +27,7 @@ public class Chessboard : MonoBehaviour
     // LOGIC
     private ChessPiece[,] _chessPieces;
     private ChessPiece currentlyDragging;
+    private ChessPiece selectedPiece;
     private bool dragging = false;
     private List<ChessPiece> deadWhites = new List<ChessPiece>();
     private List<ChessPiece> deadBlacks = new List<ChessPiece>();
@@ -34,9 +39,12 @@ public class Chessboard : MonoBehaviour
     private Vector3 bounds;
     private bool isWhiteTurn;
     private bool isSelected;
+    private bool moving;
+    Vector2Int previousPosition;
     private void Awake()
     {
         isWhiteTurn = true;
+        moving = false;
         GenerateGrid(tileSize, TILE_COUNT_CHESS, TILE_COUNT_CHESS);
         SpawnAllPieces();
         PositionAllPieces();
@@ -50,9 +58,18 @@ public class Chessboard : MonoBehaviour
             return;
         }
 
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            moving = false;
+            dragging = false;
+            selectedPiece.Shoot(false);
+            popMenu.SetActive(false);
+            currentlyDragging.SetPosition(GetTileCenter(previousPosition.x, previousPosition.y));
+        }
+
         RaycastHit info;
         Ray ray = currentCamera.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out info, 100, LayerMask.GetMask("Tile", "Hover", "Highlight")))
+        if (moving && Physics.Raycast(ray, out info, 100, LayerMask.GetMask("Tile", "Hover", "Highlight")))
         {
             // Obtenemos los indicies de las casillas sobre las que pasa el mouse
             Vector2Int hitPosition = getTileIndex(info.transform.gameObject);
@@ -91,7 +108,8 @@ public class Chessboard : MonoBehaviour
             // Soltamos el mouse para colocar
             else if (dragging && Input.GetMouseButtonDown(0))
             {
-                Vector2Int previousPosition = new Vector2Int(currentlyDragging.currentX, currentlyDragging.currentY);
+                previousPosition.x = currentlyDragging.currentX;
+                previousPosition.y = currentlyDragging.currentY;
 
                 bool validMove = MoveTo(currentlyDragging, hitPosition.x, hitPosition.y);
                 if (!validMove)
@@ -99,6 +117,7 @@ public class Chessboard : MonoBehaviour
 
                 currentlyDragging = null;
                 dragging = false;
+                moving = false;
                 RemoveHighlightTiles();
 
             }
@@ -121,6 +140,42 @@ public class Chessboard : MonoBehaviour
                 RemoveHighlightTiles();
             }
         }
+
+        
+        Vector3 cam1Pos = currentCamera.transform.position;
+        Vector3 direction1 = cam1Pos - Vector3.zero;
+                
+        float camxz = Mathf.Atan2(direction1.z, direction1.x) * Mathf.Rad2Deg;
+        float camxy = Mathf.Atan2(direction1.y, direction1.x) * Mathf.Rad2Deg;
+        
+        if (!moving && Input.GetMouseButtonDown(0))
+        {
+            if (Physics.Raycast(ray, out info, 100, LayerMask.GetMask("Pieces")))
+            {
+                Debug.Log(info.transform.gameObject);
+                for (int i = 0; i < 8; i++)
+                    for (int j = 0; j < 8; j++)
+                        if (_chessPieces[i, j] != null && _chessPieces[i, j].transform.gameObject == info.transform.gameObject)
+                        {
+                            Debug.Log("Piece Found");
+                            selectedPiece = _chessPieces[i, j];
+                            Debug.Log(selectedPiece.name);
+                        }
+                popMenu.SetActive(true);
+                Vector3 camPos = currentCamera.transform.position;
+                Vector3 direction = camPos - selectedPiece.transform.position;
+                
+                float anglexz = Mathf.Atan2(direction.z, direction.x) * Mathf.Rad2Deg;
+                float anglexy = Mathf.Atan2(direction.y, Vector2.SqrMagnitude(new Vector2(direction.x, direction.z))) * Mathf.Rad2Deg;
+
+                Debug.Log((String.Format("Angulo en el plano vertical: {0}, Anugulo en el plano horizontal: {1}", direction, anglexz)));
+                
+                popMenu.transform.SetPositionAndRotation(selectedPiece.transform.position, Quaternion.Euler(anglexy, 270-anglexz, 0));
+                direction.z = -Math.Abs(direction.z);
+                popMenu.transform.Translate(direction * 0.2f);
+            }
+        }
+        
         //Si estamos arrastrando una pieza.
         if (dragging)
         {
@@ -265,6 +320,18 @@ public class Chessboard : MonoBehaviour
     {
         victoryScreen.SetActive(true);
         victoryScreen.transform.GetChild(winningTeam).gameObject.SetActive(true);
+    }
+
+    public void OnMoverButton()
+    {
+        moving = true;
+        popMenu.SetActive(false);
+    }
+
+    public void onShootButton()
+    {
+        selectedPiece.Shoot(true);
+        popMenu.SetActive(false);
     }
 
     public void OnResetButton()
