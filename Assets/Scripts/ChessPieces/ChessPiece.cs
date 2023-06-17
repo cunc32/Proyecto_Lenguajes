@@ -92,8 +92,10 @@ public class ChessPiece : MonoBehaviour
             // Aplicar la rotación al objeto
             if (type == ChessPieceType.Knight)
                 transform.rotation = Quaternion.Euler(-90, -angle-90, 0);
-            else
+            else if (type == ChessPieceType.Bishop)
                 transform.rotation = Quaternion.Euler(-90, -angle-180, 0);
+            else 
+                transform.rotation = Quaternion.Euler(-90, -angle-270, 0);
         }
 
         if (Input.GetKeyDown(KeyCode.Escape))
