@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -13,18 +14,22 @@ public enum ChessPieceType
     Queen = 5,
     King = 6
 }
-public class ChessPiece : MonoBehaviour
+public class ChessPiece : NetworkBehaviour
 {
     [Header("Padre")]
-    [SerializeField] private GameObject chessBoard;
     
     public int team;
     public int currentX;
     public int currentY;
+    public int nextX;
+    public int nextY;
     public ChessPieceType type;
+    public PowerupType actualPowerup;
+    public int life = 3;
+    public int damage = 1;
 
     private Vector3 desiredPosition;
-    private Vector3 desiredScale = Vector3.one;
+    private Vector3 desiredScale = Vector3.one * 32.3f;
     private Camera currentCamera;
 
 	private void Start(){
@@ -33,6 +38,8 @@ public class ChessPiece : MonoBehaviour
 
     private bool shoot = false;
     private bool isSelected = false;
+    private bool actionMade = false;
+    private bool actionType = false;
     
     public void Update()
     {
@@ -106,9 +113,66 @@ public class ChessPiece : MonoBehaviour
         
     }
 
+    public void Invincible()
+    {
+        life += 3;
+    }
+
+    public int Shot(int damage)
+    {
+        Debug.Log("Uhh I'm shot bro, please help me... Collision at: " + currentX + ", " + currentY);
+        life -= damage;
+        return life;
+    }
+
     public void Shoot(bool shooting)
     {
         shoot = true;
+    }
+
+    public void MakeAction()
+    {
+        actionMade = true;
+    }
+
+    public bool Acted()
+    {
+        return actionMade;
+    }
+
+    public bool ActionType()
+    {
+        return actionType;
+    }
+
+    public void MoveAction()
+    {
+        actionType = false;
+    }
+
+    public void ShootAction()
+    {
+        actionType = true;
+    }
+
+    public void NextTurn()
+    {
+        actionMade = false;
+    }
+
+    public void ResetFlags()
+    {
+        actionMade = false;
+        actionType = false;
+    }
+
+    public void Move()
+    {
+        if (nextX == -1 || nextY == -1) return;
+        currentX = nextX;
+        currentY = nextY;
+        nextX = -1;
+        nextY = -1;
     }
 
     public virtual List<Vector2Int> GetAvailableMoves(ref ChessPiece[,] board, int tileCountX, int tileCountY)

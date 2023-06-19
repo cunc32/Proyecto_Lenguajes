@@ -81,10 +81,10 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ed46ea81d72702d4abed91548af94ba9, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 8413102167011276139}
+      addedObject: {fileID: 176}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ed46ea81d72702d4abed91548af94ba9, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 6059389923734892008}
+      addedObject: {fileID: 158}
   m_SourcePrefab: {fileID: 100100000, guid: ed46ea81d72702d4abed91548af94ba9, type: 3}
 --- !u!4 &1625642314478862201 stripped
 Transform:
@@ -96,7 +96,7 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: ed46ea81d72702d4abed91548af94ba9, type: 3}
   m_PrefabInstance: {fileID: 1226606852878784658}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &8413102167011276139
+--- !u!114 &176
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -108,12 +108,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cea0b6d4e7667974fae9dd4aaa833bfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chessBoard: {fileID: 0}
   team: 0
   currentX: 0
   currentY: 0
-  type: 0
---- !u!64 &6059389923734892008
+  type: 3
+--- !u!64 &158
 MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

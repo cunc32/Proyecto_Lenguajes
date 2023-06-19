@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6743863151772182284}
   - component: {fileID: -5314899112596912338}
+  - component: {fileID: 793503454950251412}
   m_Layer: 0
   m_Name: Pawn
   m_TagString: Untagged
@@ -45,10 +46,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f73e9b9dff9a02140b9b13fa881c7e96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  chessBoard: {fileID: 0}
   team: 0
   currentX: 0
   currentY: 0
   type: 0
+--- !u!114 &793503454950251412
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1576211527598678087}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 951099334
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!1001 &4230232749480497444
 PrefabInstance:
   m_ObjectHideFlags: 0
