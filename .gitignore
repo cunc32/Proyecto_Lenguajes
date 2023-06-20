@@ -5,6 +5,11 @@
 [Bb]uild/
 [Bb]uilds/
 Assets/AssetStoreTools*
+Assets/TerrainSampleAssets
+Assets/TerrainTexturesPackFree
+Assets/Conifers [BOTD]
+Assets/SubstanceAssets
+Assets/_TerrainAutoUpgrade
 
 # Visual Studio cache directory
 .vs/

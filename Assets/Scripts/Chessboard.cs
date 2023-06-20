@@ -19,6 +19,7 @@ public class Chessboard : NetworkBehaviour
     [SerializeField] private GameObject victoryScreen;
     [SerializeField] private GameObject popMenu;
     [SerializeField] private Material[] personalizedMaterials;
+    [SerializeField] private GameObject[] terrains;
     
     [Header("Prefabs & Materials")]
     [SerializeField] private GameObject[] prefabs;
@@ -74,6 +75,7 @@ public class Chessboard : NetworkBehaviour
     private int moveCount;
     private int nextPowerup;
     private Vector2Int previousPosition;
+    private int activeTerrain;
     
     public override void OnNetworkSpawn()
     {
@@ -150,6 +152,8 @@ public class Chessboard : NetworkBehaviour
 
     private void Awake()
     {
+        activeTerrain = new Random().Next(0, 4);
+        terrains[activeTerrain].SetActive(true);
         nextPowerup = 0;
         powerups = new Powerup[8, 8];
         isWhiteTurn = true;
@@ -161,6 +165,13 @@ public class Chessboard : NetworkBehaviour
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.U))
+        {
+            terrains[activeTerrain].SetActive(false);
+            activeTerrain = new Random().Next(0, 4);
+            terrains[activeTerrain].SetActive(true);
+        }
+        
         checkPowerup();
         checkRemainingPieces();
         if (turnCount == nextPowerup)
@@ -289,16 +300,11 @@ public class Chessboard : NetworkBehaviour
             {
                 if (_chessPieces[hitPosition.x, hitPosition.y] != null && !_chessPieces[hitPosition.x, hitPosition.y].Acted())
                 {
-                    // Comprobar nuestro turno
-                    // if ((_chessPieces[hitPosition.x, hitPosition.y].team == 0 && isWhiteTurn)||
-                    //     (_chessPieces[hitPosition.x, hitPosition.y].team == 1 && !isWhiteTurn))
-                    // {
-                        currentlyDragging = _chessPieces[hitPosition.x, hitPosition.y];
-                        // Obtén una lista de los lugares a los que puede ir el número 1 y resalta las casillas como soldadura.
-                        availableMoves = currentlyDragging.GetAvailableMoves(ref _chessPieces, TILE_COUNT_CHESS, TILE_COUNT_CHESS);
-                        dragging = true;
-                        HighlightTiles();
-                    // }
+                    currentlyDragging = _chessPieces[hitPosition.x, hitPosition.y];
+                    // Obtén una lista de los lugares a los que puede ir el número 1 y resalta las casillas como soldadura.
+                    availableMoves = currentlyDragging.GetAvailableMoves(ref _chessPieces, TILE_COUNT_CHESS, TILE_COUNT_CHESS);
+                    dragging = true;
+                    HighlightTiles();
                 }
             }
             // Soltamos el mouse para colocar
@@ -356,7 +362,6 @@ public class Chessboard : NetworkBehaviour
 
     }
     
-    
     // Generate the board
     private void GenerateGrid(float tileSize, int tileCountX, int tileCountY)
     {
@@ -394,7 +399,6 @@ public class Chessboard : NetworkBehaviour
         return tileObject;
     }
     
-
     #region Spawning and Positioning
 
     // Spawning pieces
@@ -705,14 +709,17 @@ public class Chessboard : NetworkBehaviour
                         Destroy(_chessPieces[i, j].gameObject);
                         _chessPieces[i, j] = SpawnSinglePiece((ChessPieceType)(new Random().Next(2, 6)), team);
                         PositionSinglePiece(i, j, true);
+                        _chessPieces[i, j].actualPowerup = PowerupType.None;
                     }
                     else if (_chessPieces[i, j].actualPowerup == PowerupType.Invincible)
                     {
                         _chessPieces[i, j].Invincible();
+                        _chessPieces[i, j].actualPowerup = PowerupType.None;
                     }
                     else if (_chessPieces[i, j].actualPowerup == PowerupType.Minimize)
                     {
                         _chessPieces[i, j].SetScale(Vector3.one * 10f);
+                        _chessPieces[i, j].actualPowerup = PowerupType.None;
                     }
                     else if (_chessPieces[i, j].actualPowerup == PowerupType.Shambles)
                     {
@@ -821,10 +828,7 @@ public class Chessboard : NetworkBehaviour
                             {
                                 if (count == enemy)
                                 {
-                                    _chessPieces[k, l] = _chessPieces[i, j];
-                                    Destroy(_chessPieces[i, j].gameObject);
-                                    _chessPieces[i, j] = null;
-                                    break;
+                                    _chessPieces[k, l].MakeAction();
                                 }
 
                                 count++;
